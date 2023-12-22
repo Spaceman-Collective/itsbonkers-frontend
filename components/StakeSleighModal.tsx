@@ -27,6 +27,8 @@ import { createSleighTx } from "@/utils";
 import { randomBytes } from "crypto";
 import toast from "react-hot-toast";
 import { GameSettings } from "@/types/types";
+import { useGameSettings } from "@/hooks/useGameSettings";
+import userStore from "@/stores/userStore";
 
 interface StakeSleighModalProps {
   minStakeAmount: number;
@@ -46,8 +48,9 @@ export const StakeSleighModal: React.FC<StakeSleighModalProps> = ({
   stg2Started,
 }) => {
   const [stakeAmount, setStakeAmount] = useState(250);
-
+  const { globalGameId } = userStore();
   const { connection } = useSolana();
+  const { data: gameSettings } = useGameSettings(connection, globalGameId);
   const {
     wallet,
     publicKey,
@@ -81,7 +84,9 @@ export const StakeSleighModal: React.FC<StakeSleighModalProps> = ({
         sleighId,
         stakeAmt,
         connection,
-        publicKey
+        publicKey,
+        gameSettings!.gameId,
+        gameSettings!.coinMint
       );
       if (!tx) {
         throw Error("Failed to create tx");

@@ -5,12 +5,12 @@ import { Connection, PublicKey } from "@solana/web3.js";
 export const useCurrentNavigationParts = (
   walletAddress: PublicKey | null,
   connection: Connection,
-  tokenMint: string
+  tokenMint: PublicKey | undefined
 ) => {
   return useQuery<bigint>(
     ["walletNavigationBalance", walletAddress?.toBase58()],
     async () => {
-      if (walletAddress) {
+      if (walletAddress && tokenMint) {
         try {
           const amount = await getWalletTokenBalance({
             walletAddress,

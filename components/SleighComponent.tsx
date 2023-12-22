@@ -63,7 +63,11 @@ export function SleighComponent({
   useEffect(() => {
     const setDeliveries = async (sleigh: Sleigh, connection: Connection) => {
       // refetchPendingDeliveries(sleigh);
-      const gameRolls = await getGameRolls(connection, "DELIVERY");
+      const gameRolls = await getGameRolls(
+        connection,
+        "DELIVERY",
+        gameSettings!.gameId
+      );
       if (gameRolls && currentSleigh) {
         const numOfDeliveriesPending =
           gameRolls.rolls.length - currentSleigh.lastDeliveryRoll.toNumber();
@@ -95,7 +99,12 @@ export function SleighComponent({
       const tx = await deliveryTx(
         BigInt(currentSleigh.sleighId.toString()),
         connection,
-        publicKey
+        publicKey,
+        gameSettings!.gameId,
+        gameSettings!.propulsionPartsMint,
+        gameSettings!.landingGearPartsMint,
+        gameSettings!.navigationPartsMint,
+        gameSettings!.presentsBagPartsMint
       );
       if (!tx) {
         throw Error("Failed to create tx");
@@ -126,7 +135,11 @@ export function SleighComponent({
       }
       const sleighId = BigInt(`0x${randomBytes(8).toString("hex")}`);
 
-      const gameRolls = await getGameRolls(connection, currentStage);
+      const gameRolls = await getGameRolls(
+        connection,
+        currentStage,
+        gameSettings!.gameId
+      );
 
       if (!gameRolls) {
         throw Error("Failed to get game rolls");
@@ -136,7 +149,8 @@ export function SleighComponent({
         sleighId,
         gameRolls.rolls,
         connection,
-        publicKey
+        publicKey,
+        gameSettings!.gameId
       );
       if (!tx) {
         throw Error("Failed to create tx");

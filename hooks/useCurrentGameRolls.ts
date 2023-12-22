@@ -7,7 +7,8 @@ import { BN } from "@coral-xyz/anchor";
 import { useGameSettings } from "./useGameSettings";
 
 export const useCurrentGameRolls = (connection: Connection) => {
-  const { data: gameSettings } = useGameSettings(connection);
+  const { globalGameId } = userStore();
+  const { data: gameSettings } = useGameSettings(connection, globalGameId);
   const { data: currentSlot } = useCurrentSlot();
 
   return useQuery(
@@ -22,9 +23,9 @@ export const useCurrentGameRolls = (connection: Connection) => {
       }
 
       if (currentSlot > gameSettings?.stage1End?.toNumber()) {
-        return getGameRolls(connection, "DELIVERY");
+        return getGameRolls(connection, "DELIVERY", gameSettings.gameId);
       } else {
-        return getGameRolls(connection, "BUILD");
+        return getGameRolls(connection, "BUILD", gameSettings.gameId);
       }
     },
     {

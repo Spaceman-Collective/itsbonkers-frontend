@@ -28,6 +28,8 @@ import { retireSleighTx } from "@/utils";
 import toast from "react-hot-toast";
 import { Sleigh } from "@/types/types";
 import { BN } from "@coral-xyz/anchor";
+import { useGameSettings } from "@/hooks/useGameSettings";
+import userStore from "@/stores/userStore";
 
 interface RetireSleighModallProps {
   retireInProgress: boolean;
@@ -54,6 +56,8 @@ export const RetireSleighModal: React.FC<RetireSleighModallProps> = ({
     connecting,
     disconnecting,
   } = useWallet();
+  const { globalGameId } = userStore();
+  const { data: gameSettings } = useGameSettings(connection, globalGameId);
 
   const retireSleigh = async () => {
     setRetireInProgress(true);
@@ -66,7 +70,9 @@ export const RetireSleighModal: React.FC<RetireSleighModallProps> = ({
       const tx = await retireSleighTx(
         BigInt(currentSleigh.sleighId.toNumber()),
         connection,
-        publicKey
+        publicKey,
+        gameSettings!.gameId,
+        gameSettings!.coinMint
       );
       if (!tx) {
         throw Error("Failed to create tx");

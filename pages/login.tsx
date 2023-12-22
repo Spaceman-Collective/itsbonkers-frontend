@@ -20,17 +20,12 @@ import { Keypair, PublicKey } from "@solana/web3.js";
 // import useSleighs from "@/hooks/useSleighs";
 import useSolana from "@/hooks/useSolana";
 import {
-  LANDING_GEAR_MINT_ADDRESS,
-  NAVIGATION_MINT_ADDRESS,
-  PRESENTS_BAG_MINT_ADDRESS,
-  PROPULSION_MINT_ADDRESS,
-} from "@/constants";
-import {
   createAssociatedTokenAccountInstruction,
   getAssociatedTokenAddressSync,
 } from "@solana/spl-token";
 import { sendAllTxParallel } from "@/utils/solana";
 import { IoIosArrowDown } from "react-icons/io";
+import { useGameSettings } from "@/hooks/useGameSettings";
 
 function LoginPage() {
   const router = useRouter();
@@ -39,14 +34,22 @@ function LoginPage() {
   const [isLoginInProgress, setLoginInProgress] = useState(false);
   const [ran, setRan] = useState(false);
   const [gameIdInput, setGameIdInput] = useState("");
+  const { connection } = useSolana();
+  const { username, loggedIn, globalGameId, setGlobalGameId } = userStore();
+
+  const { data: gameSettings, refetch: refetchGameSettings } = useGameSettings(
+    connection,
+    globalGameId
+  );
 
   const handleGameIdInputChange = (event: any) => {
     setGameIdInput(event.target.value);
   };
+  const handleGlobalGameIdChange = (gameId: number) => {
+    setGlobalGameId(gameId);
+    refetchGameSettings();
+  };
 
-  // const { refetch: refetchSleighs } = useSleighs();
-
-  const { connection } = useSolana();
   const {
     wallet,
     publicKey,
@@ -56,16 +59,18 @@ function LoginPage() {
     disconnecting,
   } = useWallet();
 
-  const { username, loggedIn, globalGameId, setGlobalGameId } = userStore();
   const signupRef = useRef<HTMLDivElement>(null);
   const learnMoreRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchandCreateAtas = async (currentPublicKey: PublicKey) => {
-      const propulsionMintAddress = new PublicKey(PROPULSION_MINT_ADDRESS);
-      const landingGearMintAddress = new PublicKey(LANDING_GEAR_MINT_ADDRESS);
-      const navigationMintAddress = new PublicKey(NAVIGATION_MINT_ADDRESS);
-      const presentsBagMintAddress = new PublicKey(PRESENTS_BAG_MINT_ADDRESS);
+      if (!gameSettings) {
+        return;
+      }
+      const propulsionMintAddress = gameSettings.propulsionPartsMint;
+      const landingGearMintAddress = gameSettings.landingGearPartsMint;
+      const navigationMintAddress = gameSettings.navigationPartsMint;
+      const presentsBagMintAddress = gameSettings.presentsBagPartsMint;
 
       let ixs = [];
       console.log("pk: ", currentPublicKey.toString());
@@ -411,8 +416,8 @@ function LoginPage() {
                 py={["1.5rem", "2rem"]}
                 color={theme.colors.white}
                 onClick={() => {
-                  setGlobalGameId(parseInt(gameIdInput));
-                  toast.success("Game id set");
+                  handleGlobalGameIdChange(parseInt(gameIdInput));
+                  toast.success("Game ID set");
                 }}
                 _hover={{
                   color: theme.colors.background,

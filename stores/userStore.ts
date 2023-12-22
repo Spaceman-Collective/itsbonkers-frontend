@@ -2,6 +2,7 @@ import { GameSettings, Sleigh } from "@/types/types";
 import { Wallet } from "@solana/wallet-adapter-react";
 import { Connection } from "@solana/web3.js";
 import { create } from "zustand";
+import { BN } from "@coral-xyz/anchor";
 
 type Store = {
   loggedIn: boolean;
@@ -17,7 +18,7 @@ type Store = {
   LANDING_GEAR_MINT_ADDRESS: string | null;
   NAVIGATION_MINT_ADDRESS: string | null;
   PRESENTS_BAG_MINT_ADDRESS: string | null;
-  globalGameId: number | null;
+  globalGameId: BN | null;
   setLogin: (
     status: boolean,
     loginType: string,

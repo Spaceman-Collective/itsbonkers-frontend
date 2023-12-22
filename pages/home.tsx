@@ -53,12 +53,6 @@ import { useCurrentPropulsionParts } from "@/hooks/useCurrentPropulsionParts";
 import { useCurrentNavigationParts } from "@/hooks/useCurrentNavigationParts";
 import { useCurrentLandingGearParts } from "@/hooks/useCurrentLandingGearParts";
 import { useCurrentPresentsBagParts } from "@/hooks/useCurrentPresentsBagParts";
-import {
-  LANDING_GEAR_MINT_ADDRESS,
-  NAVIGATION_MINT_ADDRESS,
-  PRESENTS_BAG_MINT_ADDRESS,
-  PROPULSION_MINT_ADDRESS,
-} from "@/constants";
 
 function HomePage() {
   const [selectedSleigh, setSelectedSleigh] = useState<Sleigh | null>(null);
@@ -66,7 +60,7 @@ function HomePage() {
   const [currentStakeCost, setCurrentStakeCost] = useState<number>(0);
   const [stg2Started, setStg2Started] = useState<boolean>(false);
 
-  const { loggedIn } = userStore();
+  const { loggedIn, globalGameId } = userStore();
   const router = useRouter();
   const queryClient = useQueryClient();
   const { connection } = useSolana();
@@ -80,7 +74,7 @@ function HomePage() {
   } = useWallet();
 
   const { data: gameSettings, isLoading: isLoadingGameSettings } =
-    useGameSettings(connection);
+    useGameSettings(connection, globalGameId);
   const {
     data: currentSleighs,
     isLoading: isLoadingSleighs,
@@ -89,29 +83,38 @@ function HomePage() {
   const { data: walletBonkBalance, isLoading: isLoadingWalletBonkBalance } =
     useCurrentWalletBonkBalance(publicKey, connection);
   const { data: currentSlot } = useCurrentSlot();
+
   const {
     data: currentPropulsionParts,
     refetch: refetchCurrentPropulsionParts,
-  } = useCurrentPropulsionParts(publicKey, connection, PROPULSION_MINT_ADDRESS);
+  } = useCurrentPropulsionParts(
+    publicKey,
+    connection,
+    gameSettings?.propulsionPartsMint
+  );
   const {
     data: currentLandingGearParts,
     refetch: refetchCurrentLandingGearParts,
   } = useCurrentLandingGearParts(
     publicKey,
     connection,
-    LANDING_GEAR_MINT_ADDRESS
+    gameSettings?.landingGearPartsMint
   );
   const {
     data: currentNavigationParts,
     refetch: refetchCurrentNavigationParts,
-  } = useCurrentNavigationParts(publicKey, connection, NAVIGATION_MINT_ADDRESS);
+  } = useCurrentNavigationParts(
+    publicKey,
+    connection,
+    gameSettings?.navigationPartsMint
+  );
   const {
     data: currentPresentsBagParts,
     refetch: refetchCurrentPresentsBagParts,
   } = useCurrentPresentsBagParts(
     publicKey,
     connection,
-    PRESENTS_BAG_MINT_ADDRESS
+    gameSettings?.presentsBagPartsMint
   );
 
   useEffect(() => {
@@ -428,7 +431,9 @@ function HomePage() {
                 >
                   <StakeSleighModal
                     minStakeAmount={currentStakeCost}
-                    maxStakeAmount={walletBonkBalance!}
+                    maxStakeAmount={parseInt(
+                      walletBonkBalance ? walletBonkBalance.toString() : "0"
+                    )}
                     stakingInProgress={stakingInProgress}
                     setStakingInProgress={setStakingInProgress}
                     refetchCurrentSleighs={refetchCurrentSleighs}

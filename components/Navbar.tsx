@@ -26,7 +26,6 @@ import { useCurrentGameRolls } from "@/hooks/useCurrentGameRolls";
 import { useGameSettings } from "@/hooks/useGameSettings";
 import useSolana from "@/hooks/useSolana";
 import { useCurrentSlot } from "@/hooks/useCurrentSlot";
-import { GAME_ID } from "@/constants";
 
 export const Navbar: React.FC = () => {
   const {
@@ -34,14 +33,15 @@ export const Navbar: React.FC = () => {
     loginType,
     solana_wallet_address,
     userProfilePic,
-    gameSettings,
+    globalGameId,
   } = userStore();
+  const { connection } = useSolana();
+  const { data: gameSettings } = useGameSettings(connection, globalGameId);
   const router = useRouter();
   const { pathname } = useRouter();
   const theme = useTheme();
   const { publicKey, disconnect } = useWallet();
   const [isLogoutInProgress, setLogoutInProgress] = useState(false);
-  const { connection } = useSolana();
   const { data: currentSlot, refetch: refetchCurrentSlot } = useCurrentSlot();
 
   const {
@@ -59,9 +59,7 @@ export const Navbar: React.FC = () => {
       console.log("Current Game Rolls: ", currentGameRolls);
     }, ((gameSettings?.rollInterval.toNumber() || 200) / 2) * 2000);
     return () => clearInterval(interval); // Clear interval on component unmount
-  }, [gameSettings]);
-
-  const { globalGameId, setGlobalGameId } = userStore();
+  }, [currentGameRolls, gameSettings, refetchCurrentGameRolls]);
 
   const getTextColor = (route: string) => {
     if (pathname.includes(route)) {
@@ -127,7 +125,7 @@ export const Navbar: React.FC = () => {
               fontFamily={theme.fonts.body}
               color={theme.colors.white}
             >
-              {GAME_ID || 0}
+              {gameSettings?.gameId.toNumber() || 0}
             </Text>
           </Flex>
         </Flex>

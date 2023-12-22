@@ -31,10 +31,10 @@ export interface GameSettings {
   sleighsBuilt: BN; // total number of sleighs built
   sleighsRetired: BN; // total number of sleighs retired. game is over when this equals built
   mintCostMultiplier: BN; // sleighs_built*mint_cost_multiplier = cost for next stake
-  propulsionPartsMint: string; // The mint address for this resource instance for this game
-  landingGearPartsMint: string; // The mint address for this resource instance for this game
-  navigationPartsMint: string; // The mint address for this resource instance for this game
-  presentsBagPartsMint: string; // The mint address for this resource instance for this game
+  propulsionPartsMint: PublicKey; // The mint address for this resource instance for this game
+  landingGearPartsMint: PublicKey; // The mint address for this resource instance for this game
+  navigationPartsMint: PublicKey; // The mint address for this resource instance for this game
+  presentsBagPartsMint: PublicKey; // The mint address for this resource instance for this game
   prizePool: BN;
 }
 

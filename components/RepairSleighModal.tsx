@@ -26,6 +26,8 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import useSolana from "@/hooks/useSolana";
 import toast from "react-hot-toast";
 import { repairSleighTx } from "@/utils";
+import { useGameSettings } from "@/hooks/useGameSettings";
+import userStore from "@/stores/userStore";
 
 interface RepairSleighModalProps {
   repairSleighInProgress: boolean;
@@ -51,6 +53,10 @@ export const RepairSleighModal: React.FC<RepairSleighModalProps> = ({
   const maxR = 255 - hp;
   const [maxRepairAmount, setMaxRepairAmount] = useState(maxR);
 
+  const { connection } = useSolana();
+  const { globalGameId } = userStore();
+  const { data: gameSettings } = useGameSettings(connection, globalGameId);
+
   const handleRepairSliderChange = (value: any) => {
     setRepairAmount(value);
   };
@@ -63,7 +69,6 @@ export const RepairSleighModal: React.FC<RepairSleighModalProps> = ({
   };
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { connection } = useSolana();
   const {
     wallet,
     publicKey,
@@ -95,7 +100,12 @@ export const RepairSleighModal: React.FC<RepairSleighModalProps> = ({
           presentsBag,
         },
         connection,
-        publicKey
+        publicKey,
+        gameSettings!.gameId,
+        gameSettings!.propulsionPartsMint,
+        gameSettings!.landingGearPartsMint,
+        gameSettings!.navigationPartsMint,
+        gameSettings!.presentsBagPartsMint
       );
       if (!tx) {
         throw Error("Failed to create tx");

@@ -1,3 +1,4 @@
+/*
 export let GAME_ID = 25;
 export const TOKEN_MINT_ADDRESS =
   "Gx1V34ivZZ1Fq7Rm9ZmogBdDgYZieYKjJU1icSupFuCT";
@@ -19,10 +20,4 @@ export const SPL_TOKENS: {
     decimals: 5,
   },
 };
-
-/*
-Propulsion Mint:  6QabNFf11sZZhMmzFiMXD6BgjS8Wpcqc4HSuyE6YXjc4
-Landing Gear Mint:  H4dgpJh3KypJW1Z6AagJYoHdzzBS41sM2nLyDqyCbk6x
-Navigation Mint:  3tSrpxAQdKMwbXN5fQjemZirAGQx72oB6ycLJ2QPWMRs
-Presents Bag Mint:  Czs6bi8TDz9u25cwWKhcFeEhcXScr9SVjV7225WkPvEr
 */
