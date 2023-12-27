@@ -195,18 +195,6 @@ export const Navbar: React.FC = () => {
               color={theme.colors.white}
               mr="0.5rem"
             >
-              {/* {loggedIn &&
-              gameSettings &&
-              gameSettings.totalStake &&
-              gameSettings.sleighsStaked
-                ? NUMBER_FORMATTER.format(
-                    Number(
-                      gameSettings.totalStake
-                        .div(gameSettings.sleighsStaked)
-                        .div(new BN(1_00000))
-                    )
-                  )
-                : "N/A"}{" "} */}
               {loggedIn &&
               gameSettings &&
               gameSettings.totalStake &&
